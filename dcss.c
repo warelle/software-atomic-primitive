@@ -1,16 +1,16 @@
 #include "dcss.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 // [attention]
 //   IS_DCSS_DESC macro heavily depends on address alignment
 //   DCSS can be only applied to rewrite address such as int* and (struct node)*
 
-void *dcss(void **a, void *o, void *n, void **ca, void *co){
+void *dcss(void **a, void *o, void *n, word_t *ca, word_t co){
   void *r;
   dcss_descriptor *dd;
 
   dd = (dcss_descriptor*)malloc(sizeof(dcss_descriptor));
+  dd->descriptor = DCSS;
   dd->a  = a;
   dd->o  = o;
   dd->n  = n;
@@ -52,8 +52,7 @@ void *dcss_read(void *addr){
 
 void dcss_write(dcss_descriptor *dd){
   dcss_descriptor *ddc = CLEAR_DCSS_DESC(dd);
-  void *val = *(ddc->ca);
-  if(val == (ddc->co)){
+  if(*ddc->ca == ddc->co){
     CAS((ddc->a), dd, (ddc->n));
   }else{
     CAS((ddc->a), dd, (ddc->o));
